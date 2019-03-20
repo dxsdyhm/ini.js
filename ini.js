@@ -62,7 +62,7 @@ function ini_string__to__json(content){ //convert an entire INI-file content to 
                          .map(function(s){return s.trim();})                      //trim start/end whitespace.
                          .filter(function(s){return s.length > 2})                //filter-out (near)empty lines.
                          .filter(function(s){return (false === /^\;/.test(s)) })  //not an inline comment-line.
-       ,RESULT  = {}
+       ,RESULT  = {"Generic":[]}
        ;
 
   var  last = undefined;
@@ -81,9 +81,8 @@ function ini_string__to__json(content){ //convert an entire INI-file content to 
       tmp = {};
       tmp[ item[0].trim() ] = item.slice(1).join("=").trim();   //make sure only the first '=' is a 'splitter', the 2nd-... is part of the sentence.
       
-      if(undefined === last){ //in-case there was no category in the INI-file, we add a new-one named '[Generic]' it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
-        RESULT["Generic"] = ("undefined" === typeof RESULT["Generic"]) ? [] : RESULT["Generic"];
-        last = RESULT[item];
+      if(false === (last instanceof Array)){ //in-case there was no category in the INI-file, we add a new-one named '[Generic]' it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
+        last = RESULT["Generic"];
       }
 
       last.push(tmp);
