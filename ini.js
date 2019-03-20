@@ -3,6 +3,43 @@
 String.prototype.trim = function(){return this.replace(/(^\s+|\s+$)/gm, "");};    //normalize String's trim method.
 
 
+function natural_compare(a, b) {
+  var ax = []
+     ,bx = []
+     ,result
+     ;
+
+  a = ("string" === typeof a) ? a : "";
+  b = ("string" === typeof b) ? b : "";
+
+  if(true  === /^\s*\/\//.test(a) && false === /^\s*\/\//.test(b)) return -1;
+  if(false === /^\s*\/\//.test(a) && true  === /^\s*\/\//.test(b)) return  1;
+  //if both starting with '//' handle it just like a standard-natural-sort.
+
+  if("undefined" !== typeof natural_compare.extractor){
+    a = natural_compare.extractor(a);
+    b = natural_compare.extractor(b);
+  }
+
+  a.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
+  b.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
+
+  while(ax.length > 0 && bx.length > 0){  //simple compare.
+    var an, bn, nn;
+    an = ax.shift();
+    bn = bx.shift();
+    nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
+    if(0 === nn) continue;
+    
+    result = nn;
+    return result;
+  }
+
+ result = ax.length - bx.length;
+ return result;
+}
+
+
 function get_filename_from_first_argument(){
   const ARGS    = process.argv
                          .filter(function(s){return false === /node\.exe/i.test(s) && false === /index\.js/i.test(s) && false === /ini\.js/i.test(s);})
@@ -104,10 +141,10 @@ function json_object_to_beautified_string(json){
 function json_object_to_ini_string(content){
   const RESULT = [];
 
-  Object.keys(content).forEach(function(category){
+  Object.keys(content).sort(natural_compare).forEach(function(category){
     RESULT.push("[" + category + "]");
     
-    Object.keys(content[category]).forEach(function(key){
+    Object.keys(content[category]).sort(natural_compare).forEach(function(key){
       var value = content[category][key];
       RESULT.push(key + "=" + value);
     });
@@ -118,6 +155,7 @@ function json_object_to_ini_string(content){
   return RESULT.join("\r\n");
 }
 
+module.exports.natural_compare                  = natural_compare;
 module.exports.get_filename_from_first_argument = get_filename_from_first_argument;
 module.exports.read_content_from_file           = read_content_from_file;
 module.exports.ini_string__to__json             = ini_string__to__json;
