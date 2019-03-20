@@ -111,7 +111,7 @@ function json_object_to_ini_string(content){
          ,value = item[key]
          ;
       var key = Object.keys(item).shift();
-      RESULT.push(key + " = " + value);
+      RESULT.push(key + "=" + value);
     });
     
     RESULT.push("");
