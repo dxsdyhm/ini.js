@@ -1,5 +1,7 @@
 (function(){"use strict";
 
+var CATEGORY_FALLBACK = "_Generic_";        //category name to use when there is no category, it does not matter for INI files, and it simplifies the overall algorithm-way-of-work..   it starts with underscore since the output is sorted and this-way it will be first :]
+
 String.prototype.trim = function(){return this.replace(/(^\s+|\s+$)/gm, "");};    //normalize String's trim method.
 
 
@@ -118,9 +120,9 @@ function ini_string__to__json(content){ //convert an entire INI-file content to 
       item = item.split("=");
       item = [item[0].trim(), item.slice(1).join("=").trim()];   //make sure only the first '=' is a 'splitter', the 2nd-... is part of the sentence.
       
-      if("undefined" === typeof last){ //in-case there was no category in the INI-file, we add a new-one named '[Generic]' it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
-        RESULT["Generic"] = ("undefined" === typeof RESULT["Generic"]) ? {} : RESULT["Generic"];
-        last = RESULT["Generic"];
+      if("undefined" === typeof last){ //in-case there was no category in the INI-file, we add a new-one named, based on the value of CATEGORY_FALLBACK  (- by default === '[_Generic_]'  ) it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
+        RESULT[CATEGORY_FALLBACK] = ("undefined" === typeof RESULT[CATEGORY_FALLBACK]) ? {} : RESULT[CATEGORY_FALLBACK];
+        last = RESULT[CATEGORY_FALLBACK];
       }
 
       last[ item[0] ] = (item[1] || "");
@@ -155,6 +157,7 @@ function json_object_to_ini_string(content){
   return RESULT.join("\r\n");
 }
 
+module.exports.CATEGORY_FALLBACK                = CATEGORY_FALLBACK;
 module.exports.natural_compare                  = natural_compare;
 module.exports.get_filename_from_first_argument = get_filename_from_first_argument;
 module.exports.read_content_from_file           = read_content_from_file;
