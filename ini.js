@@ -62,7 +62,7 @@ function ini_string__to__json(content){ //convert an entire INI-file content to 
                          .map(function(s){return s.trim();})                      //trim start/end whitespace.
                          .filter(function(s){return s.length > 2})                //filter-out (near)empty lines.
                          .filter(function(s){return (false === /^\;/.test(s)) })  //not an inline comment-line.
-       ,RESULT  = {"Generic":[]}
+       ,RESULT  = {}
        ;
 
   var  last = undefined;
@@ -73,19 +73,19 @@ function ini_string__to__json(content){ //convert an entire INI-file content to 
 
     if(true === /^\[(.+)\]$/.test(item)){               // '[example]' will add an [] item to the result (preserving an already existing item - if exists..), and will 'save'/link to the last entry.
       item = item.match(/^\[(.+)\]$/)[1];
-      RESULT[item] = ("undefined" === typeof RESULT[item]) ? [] : RESULT[item];
+      RESULT[item] = ("undefined" === typeof RESULT[item]) ? {} : RESULT[item];
       last = RESULT[item];
     }
     else if(true === /^(.+)\=(.*)$/.test(item)){
       item = item.split("=");
-      tmp = {};
-      tmp[ item[0].trim() ] = item.slice(1).join("=").trim();   //make sure only the first '=' is a 'splitter', the 2nd-... is part of the sentence.
+      item = [item[0].trim(), item.slice(1).join("=").trim()];   //make sure only the first '=' is a 'splitter', the 2nd-... is part of the sentence.
       
-      if(false === (last instanceof Array)){ //in-case there was no category in the INI-file, we add a new-one named '[Generic]' it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
+      if("undefined" === typeof last){ //in-case there was no category in the INI-file, we add a new-one named '[Generic]' it means nothing since the INI-file is 'key=value' based, the '[category]' for only for human-readibility.
+        RESULT["Generic"] = ("undefined" === typeof RESULT["Generic"]) ? {} : RESULT["Generic"];
         last = RESULT["Generic"];
       }
 
-      last.push(tmp);
+      last[ item[0] ] = (item[1] || "");
     }
   });
 
@@ -106,11 +106,8 @@ function json_object_to_ini_string(content){
   Object.keys(content).forEach(function(category){
     RESULT.push("[" + category + "]");
     
-    content[category].forEach(function(item){
-      var key   = Object.keys(item).shift()
-         ,value = item[key]
-         ;
-      var key = Object.keys(item).shift();
+    Object.keys(content[category]).forEach(function(key){
+      var value = content[category][key];
       RESULT.push(key + "=" + value);
     });
     
@@ -127,7 +124,6 @@ module.exports.json_object_to_beautified_string = json_object_to_beautified_stri
 module.exports.json_object_to_ini_string        = json_object_to_ini_string;
 module.exports.get_name_for_output_file         = get_name_for_output_file;
 module.exports.write_content_to_file            = write_content_to_file;
-/*
-*/
+
 
 }());

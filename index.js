@@ -8,10 +8,10 @@ FILE.INI            ---- input example.
 ------------------------
 FILE.JSON           ---- result-json example.
   {
-    "Category":[
-                {"key1": "value1"}
-               ,{"key2": "value2"}
-               ]
+    "Category":{
+                "key1": "value1"
+               ,"key2": "value2"
+               }
   }
 ------------------------
 Main Methods:
@@ -39,10 +39,11 @@ content = ini.ini_string__to__json(content);                  //INI to JSON-obje
 //  JSON's first-layer (category) is an array of single key:value objects.
 
 
-content["My New Category"] = [];
-content["My New Category"].push( {"Hello": "World!"} );
-content["My New Category"].push( {"New": "Content"}  );
-
+content["My New Category"] = {
+                              "Hello": "World!"
+                             ,"New": "Content"
+                             }
+                             ;
 
 
 //-------------------------------------------------------write the JSON to file (debug? or helpful tool to migrate an old-INI file to JSON?..)
