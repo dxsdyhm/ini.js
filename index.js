@@ -48,12 +48,12 @@ content["My New Category"] = {
 
 //-------------------------------------------------------write the JSON to file (debug? or helpful tool to migrate an old-INI file to JSON?..)
 ini.write_content_to_file(
-  ini.get_name_for_output_file(filename,".json")    //is just a suggestion you may use your own file-name.
+  ini.get_name_for_output_file(filename,".json", "aaa_mod")    //is just a suggestion you may use your own file-name.
  ,ini.json_object_to_beautified_string(content)     //JSON stringify (with beautify-output -- optional- you can use any stringification mehtod you like)
 );
 
 //-------------------------------------------------------JSON-to-INI, write to file. This will overwrite file. Be carful.
 ini.write_content_to_file(
-  ini.get_name_for_output_file(filename)            //is just a suggestion you may use your own file-name.
+  ini.get_name_for_output_file(filename, undefined, "aaa_mod")            //is just a suggestion you may use your own file-name.
  ,ini.json_object_to_ini_string(content)
 );        

@@ -28,7 +28,7 @@ function read_content_from_file(filename){
 
 
 
-function get_name_for_output_file(filename, different_extension){ //gives you a fully-qualified name of an output file, using the same name with '_mod' suffix added to the name of the file (same extension), you can specify (optional) different extension (for example ".json")
+function get_name_for_output_file(filename, different_extension, different_name){ //gives you a fully-qualified name of an output file, using the same name with '_mod' suffix added to the name of the file (same extension), you can specify (optional) different extension (for example ".json")
   const PATH    = require("path")
        ,PARTS = PATH.parse(filename)
        ,RESOLVE = function (path){ //normalize to Unix-slash (will work on Windows too).
@@ -40,9 +40,10 @@ function get_name_for_output_file(filename, different_extension){ //gives you a 
                     return path;
                   }
        ;
-  different_extension = "string" === typeof different_extension ? ("." + different_extension.replace(/^\.+/g,"")) : PARTS.ext; //normalize to the current-filename extension (no-change) or a new one, normalize to have '.' on the start.
+  different_extension = "string" === typeof different_extension ? ("." + different_extension.replace(/^\.+/g,"")) : PARTS.ext;  //normalize to the current-filename extension (no-change) or a new one, normalize to have '.' on the start.
+  different_name      = "string" === typeof different_name      ? different_name                                  : PARTS.name; //use originalname_mod.originalext by default unless specified otherwise.
 
-  filename =  PARTS.dir + "/" + PARTS.name + "_mod" + different_extension;
+  filename =  PARTS.dir + "/" + different_name + different_extension;
   filename = RESOLVE(filename);
   return filename;
 }
